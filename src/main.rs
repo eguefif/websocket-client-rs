@@ -12,12 +12,12 @@ fn main() -> std::io::Result<()> {
             eprintln!("Error while handling socket: {e}")
         }
     });
-    let mut input = String::new();
     loop {
+        let mut input = String::new();
         std::io::stdin()
             .read_line(&mut input)
             .expect("Error while reading stdin");
-        if input == "quit" {
+        if input.trim() == "quit" {
             break;
         }
         if let Err(e) = stdin_tx.send(input.clone()) {
