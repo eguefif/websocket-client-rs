@@ -52,8 +52,8 @@ fn get_headers(response: &str) -> Vec<(String, String)> {
     lines.next().unwrap();
     for line in lines {
         let mut splits = line.split(":");
-        let key = splits.next().unwrap().to_string();
-        let value = splits.next().unwrap().to_string();
+        let key = splits.next().unwrap().trim().to_string();
+        let value = splits.next().unwrap().trim().to_string();
         headers.push((key, value))
     }
     headers

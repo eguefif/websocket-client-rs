@@ -51,16 +51,19 @@ impl Websocket {
 }
 
 fn check_server_handshake(key: String, request: Request) -> bool {
-    if let Some(server_key) = request.get_value("Sec-WebSocket-Key") {
-        let transformed_key = transform_key(&key);
-        return server_key == transformed_key;
+    if let Some(server_key) = request.get_value("Sec-WebSocket-Accept") {
+        let control_key = transform_key(&key);
+        println!("server key: {}", server_key);
+        println!("control key: {}", control_key);
+        return server_key == control_key;
     }
     false
 }
 
 fn transform_key(key: &str) -> String {
+    let guid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
     let mut hasher = Sha1::new();
-    hasher.update(key);
+    hasher.update(format!("{key}{guid}"));
     let hash = hasher.finalize();
     BASE64_STANDARD.encode(hash)
 }
