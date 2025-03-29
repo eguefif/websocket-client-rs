@@ -1,8 +1,10 @@
-use std::io::prelude::*;
-use std::net::TcpStream;
+use crate::websocket::Websocket;
 use std::sync::mpsc;
 use std::sync::mpsc::Receiver;
 use std::thread;
+
+mod request;
+mod websocket;
 
 fn main() -> std::io::Result<()> {
     let (stdin_tx, stdin_rx) = mpsc::channel::<String>();
@@ -28,14 +30,10 @@ fn main() -> std::io::Result<()> {
 }
 
 fn handle_network(stdin_rx: Receiver<String>) -> std::io::Result<()> {
-    let mut stream = TcpStream::connect("127.0.0.1:8000")?;
+    let mut ws_socket = Websocket::new("127.0.0.1", 8000);
+    ws_socket.init_websocket();
     loop {
         if let Ok(message) = stdin_rx.try_recv() {
-            stream.write(message.as_bytes())?;
-            let mut buffer = vec![0; message.len()];
-            stream.read_exact(&mut buffer)?;
-            let response = String::from_utf8(buffer).unwrap();
-            println!("Server: {response}");
             if message == "quit" {
                 break;
             }
